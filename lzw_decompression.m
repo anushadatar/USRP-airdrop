@@ -5,6 +5,7 @@ valueSet = [0 1 2 3 4];
 lzw_dict = containers.Map(valueSet, keySet);
 decoded = lzw_dict(ocode);
 char = '';
+val = 4;
 
 for i = 2:strlength(input)
     ncode = str2double(input(i));
@@ -18,6 +19,7 @@ for i = 2:strlength(input)
     
     decoded = strcat(decoded, string);
     char = string(1);
-    lzw_dict(strcat(ocode, str2double(char))) = string; % this line doesn't work yet
-    ncode = ocode;
+    lzw_dict(val+1) = strcat(lzw_dict(ocode), char);
+    ocode = ncode;
+    val = val+1;
 end
