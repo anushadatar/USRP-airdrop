@@ -11,17 +11,17 @@ function  decompressed_data = decompress(packet)
     lzw_dict = containers.Map(valueSet, keySet);
     char = '';
     val = 1;
-    b = 13; % length of binary string
+    b_len = 13; % length of binary string
     
     % 1. input first code, store in OCODE
-    ocode_b = input(1:bin_bits);
+    ocode_b = input(1:b_len);
     ocode = bi2de(ocode_b, 'left-msb');
     % 2. output translation of OCODE
     decoded = lzw_dict(ocode);
 
-    for i = 2:(length(input)/bin_bits)
+    for i = 2:(length(input)/b_len)
         % 3. input next code, store in NCODE
-        ncode_b = input((i-1)*bin_bits+1:i*bin_bits);
+        ncode_b = input((i-1)*b_len+1:i*b_len);
         ncode = bi2de(ncode_b, 'left-msb');
 
         % 4. is NCODE in table?
