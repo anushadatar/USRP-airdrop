@@ -8,8 +8,7 @@ clear;
 rx = trim_data(rx, 0.01);
 
 [phi, f_delta] = estimate_cfo(rx);
-corrected_data = cfo_correct(rx, phi, f_delta);
-
+corrected_data = cfo_correct_looping(rx);
 
 
 function qpsk_signal = qpsk(data, fc)
@@ -72,9 +71,20 @@ function corrected_signal = cfo_correct(data, phi, f_delta)
     exponentials = exp(-j.*((f_delta.*indices') + phi));
 
     corrected_signal = data.*exponentials;
-    M = abs(max(corrected_signal));
-
-    plot(real(corrected_signal), imag(corrected_signal), '.')
-    xlim([-M M]);
-    ylim([-M M]);
 end
+
+function corrected_data = cfo_correct_looping(data)
+    corrected_data = [];
+    for i = [1:length(data)./100:length(data)]
+        data_section = data(i:i+length(data)./100-1);
+        [phi, f_delta] = estimate_cfo(data_section);
+        corrected_section = cfo_correct(data_section, phi, f_delta);
+        
+        corrected_data = [corrected_data corrected_section];
+    end
+    
+    plot(real(corrected_data), imag(corrected_data), '.')
+    
+
+end
+ 
