@@ -2,8 +2,7 @@
 data = [-1, 1, -1, -1, 1, -1, 1, 1]; % bits to modulate (1 and -1)
 fc = 100000; % center frequency
 
-clear;
-[rx, tx] = open_data('rx2.dat','tx.dat');
+[rx, tx] = open_data('rx4.dat','tx.dat');
 
 rx = trim_data(rx, 0.01);
 
@@ -72,9 +71,9 @@ function corrected_signal = cfo_correct(data, phi, f_delta)
     exponentials = exp(-j.*((f_delta.*indices') + phi));
 
     corrected_signal = data.*exponentials;
-    M = abs(max(corrected_signal));
+    max = max(corrected_signal)
 
     plot(real(corrected_signal), imag(corrected_signal), '.')
-    xlim([-M M]);
-    ylim([-M M]);
+    xlim([-max max);
+    ylim([-max max(corrected_signal)]);
 end
