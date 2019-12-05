@@ -1,28 +1,54 @@
 function  decompressed_data = decompress(packet)
-    input = packet; %might not work for binary
-    ocode = str2double(input(1));
+    % decompresses bitstream
+    % input: bitstream 
+    % output: bitstream
+
+    input = packet;
+    
+    % initialize dictionary and variables
     keySet = {'0' '1'};
-    valueSet = [0 1 2 3 4];
+    valueSet = [0 1];
     lzw_dict = containers.Map(valueSet, keySet);
-    decoded = lzw_dict(ocode);
     char = '';
-    val = 1; %might be wrong ask viv
+    val = 1;
+    b_len = 13; % length of binary string
+    
+    % 1. input first code, store in OCODE
+    ocode_b = input(1:b_len);
+    ocode = bi2de(ocode_b, 'left-msb');
+    % 2. output translation of OCODE
+    decoded = lzw_dict(ocode);
 
-    for i = 2:strlength(input)
-        ncode = str2double(input(i));
+    for i = 2:(length(input)/b_len)
+        % 3. input next code, store in NCODE
+        ncode_b = input((i-1)*b_len+1:i*b_len);
+        ncode = bi2de(ncode_b, 'left-msb');
 
-        if isKey(lzw_dict, ncode)
-            string = lzw_dict(ncode);
-        else
-            string = lzw_dict(ocode);
-            string = strcat(string, char);
+        % 4. is NCODE in table?
+        if isKey(lzw_dict, ncode) % yes
+            % 7. STRING = translation of NCODE
+            string_ = lzw_dict(ncode);
+        else % no
+            % 5. string = translation of OCODE
+            string_ = lzw_dict(ocode);
+            % 6. STRING = STRING+CHAR
+            string_ = strcat(string_, char);
         end
-
-        decoded = strcat(decoded, string);
-        char = string(1);
+        
+        % 8. output STRING
+        decoded = strcat(decoded, string_);
+        % 9. CHAR = the first character in STRING
+        char = string_(1);
+        % 10. add entry in table for OCODE + CHAR
         lzw_dict(val+1) = strcat(lzw_dict(ocode), char);
+        % 11. OCODE = NCODE
         ocode = ncode;
         val = val+1;
     end
-    decompressed_data = decoded
+    
+    % turn decoded string into array
+    decompressed_data = [];
+    for i = 1:length(decoded)
+        decompressed_data(i) = str2double(decoded(i));
+    end
 end
