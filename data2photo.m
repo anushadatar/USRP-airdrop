@@ -1,5 +1,5 @@
 function  data2photo(dataStream)
-% converts bitstream into imafe
+% converts bitstream into image
 %input:  Photo file 
 %       datastream = output of data2photo includes size of image and data
 %output: bit stream
