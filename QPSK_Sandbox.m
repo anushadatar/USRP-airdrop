@@ -3,17 +3,33 @@ data = [-1, 1, -1, -1, 1, -1, 1, 1]; % bits to modulate (1 and -1)
 fc = 100000; % center frequency
 
 clear;
-[rx, tx] = open_data('rx2.dat','tx.dat');
+[rx, tx] = open_data('rx.dat','tx.dat');
 
 %%
-plot(real(rx(15300000:17500000)))
+plot(real(rx(8600000:9000000)))
 %%
 
 %rx = trim_data(rx, 0.01);
-rx = rx(15300000:17500000);
-
+%rx = rx(6400000:8500000); % rx4 trim
+%rx = rx(15300000:17400000); % rx2 trim
+%rx = rx(14000000:16200000); % rx_10000_2 trim
+%rx = rx(11700000:22000000); % rx_50000_2 trim
+%rx = rx(6700000:17000000); % rx trim
+%rx = rx(12200000:13300000);
+rx = rx(8600000:9000000);
+%%
 [phi, f_delta] = estimate_cfo(rx);
 corrected_data = cfo_correct_looping(rx);
+%%
+plot(imag(rx));
+%%
+
+tx_bits = decode_data(tx);
+rx_bits = decode_data(corrected_data);
+
+%%
+plot(tx_bits, '.')
+
 
 
 function qpsk_signal = qpsk(data, fc)
@@ -99,4 +115,14 @@ function corrected_data = cfo_correct_looping(data)
     
 
 end
+
+function decoded_data = decode_data(data)
+    decoded_data = [];
+    for i = [1:1:size(data,1)]
+        decoded_symbol = [sign(real(data(i))), sign(imag(data(i)))];
+        decoded_data = [decoded_data decoded_symbol];
+    end
+end
+        
+      
  
