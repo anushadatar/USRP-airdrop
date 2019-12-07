@@ -9,25 +9,25 @@ function unpacked_data = unpack_data(rx_filename)
         % Decode none bits to find phase offset
         % Magnitude/temporal error correction
         % Removal of redundancy
-   
-    cleared_data = data_points;
+        
     unpacked_data = zeros(2*length(data_points));
     for index = 1 : length(N)
-        if real(cleared_data(index)) > 0
-            unpacked_data(2*index-1) = 1;
-            if imag(cleared_data(index)) > 0
-                unpacked_data(2*index) = 1;
+        if real(index) > 0
+            unpacked_data[2*index-1] = 1;
+            if imag(index) > 0
+                unpacked_data[2*index] = 1;
             else
-                unpacked_data(2*index) = 0;
+                unpacked_data[2*index] = 0;
         
             end
         else
-            unpacked_data(2*index-1) = 0;
-            if imag(cleared_data(index)) > 0
-                unpacked_data(2*index) = 1;
+            unpacked_data[2*index-1] = 1;
+            if imag(index) > 0
+                unpacked_data[2*index] = 1;
             else
-                unpacked_data(2*index) = 0;
+                unpacked_data[2*index] = 0;
+        
             end
         end
     end 
-end
+end 
