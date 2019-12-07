@@ -28,7 +28,7 @@ function  compressed_data = compress(packet)
            string_ = strcat(string_, char);
 
        else % no
-           % finagle integer into [bin_bits]-bit binary string
+           % finagle integer into [b_len]-bit binary string
            int_ = lzw_dict(string_);
            bin_ = de2bi(int_, b_len, 'left-msb');
            str_ = string(bin_);
@@ -45,7 +45,7 @@ function  compressed_data = compress(packet)
        end
     end
     
-    % finagle integer into [bin-bits]-bit binary string
+    % finagle integer into [b_len]-bit binary string
 	int_ = lzw_dict(string_);
     bin_ = de2bi(int_, b_len, 'left-msb');
     str_ = string(bin_);
