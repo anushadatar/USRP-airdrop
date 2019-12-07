@@ -9,6 +9,10 @@ function unpacked_data = unpack_data(rx_filename)
         % Decode none bits to find phase offset
         % Magnitude/temporal error correction
         % Removal of redundancy
+        %         % round the average of every 3 bits
+        %         for i = 1:3:length(redundant_data)
+        %             essential_data((i+2)/3) = round(mean(redundant_data(i:i+2)));
+        %         end
    
     cleared_data = data_points;
     unpacked_data = zeros(2*length(data_points));
