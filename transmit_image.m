@@ -10,7 +10,7 @@ function[] = transmit_image(image_file, tx_filename)
     % replace 0s with -1s
     packed_data(packed_data == 0) = -1;
     % add extra bit if length is odd
-    if mod(packed_data, 2) == 1
+    if mod(length(packed_data), 2) == 1
         packed_data = [packed_data -1];
     end
     % I contains odd bits, Q contains even bits
