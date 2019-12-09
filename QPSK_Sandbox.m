@@ -2,7 +2,7 @@ clear;
 [rx, tx] = open_data('rx2.dat','tx.dat');
 
 %%
-plot(real(rx(8600000:9000000)))
+plot(rx(100000:160000));
 %%
 
 %rx = trim_data(rx, 0.01);
@@ -14,23 +14,30 @@ rx = rx(15300000:17400000); % rx2 trim
 %rx = rx(12200000:13300000);
 %rx = rx(8600000:9000000);
 %%
-rx = rx(50000:60000);
+rx = rx(894000:900000);
 %%
 [phi, f_delta] = estimate_cfo(rx(20000:24000));
 corrected_data = cfo_correct(rx(20000:24000), phi, f_delta);
 %%
 corrected = costas_loop(rx);
 %%
+errors = compute_errors(rx);
+ds = compute_d(errors);
+psi = compute_psi_hats(ds);
+plot(ds);
+%%
 plot(rx)
 %%
-plot(real(corrected), imag(corrected),'.');
+plot(rx, 'r.')
+hold on
+plot(real(corrected), imag(corrected),'b.');
 %%
 
 tx_bits = decode_data(tx);
 rx_bits = decode_data(corrected_data);
 
 %%
-plot(rx_bits(1:100), '.')
+plot(rx)
 
 
 
@@ -157,6 +164,15 @@ function psi_hats = compute_psi_hats(ds)
     
     for i = [1:1:size(psi_hats, 1)-1]
         psi_hats(i+1) = psi_hats(i) + ds(i);
+        
+        if(psi_hats(i+1)<-pi)
+            psi_hats(i+1) = psi_hats(i+1) + (2.*pi);
+        end
+        
+        if(psi_hats(i+1)>pi)
+            psi_hats(i+1) = psi_hats(i+1) - (2.*pi);
+        end
+        
     end
 end 
 
@@ -164,17 +180,19 @@ function corrected = correct_cfo(data, psi_hats)
     corrected = ones(size(data));
     
     for i = [1:1:size(data,1)]
-        corrected(i) = data(i).*exp(-j.*(psi_hats(i)));
+        corrected(i) = data(i).*exp(j.*(psi_hats(i)));
     end
 end
 
 function corrected = costas_loop(data);
-    errors = compute_errors(data);
+    rms_data = data; %./(rms(abs(data)));
+    errors = compute_errors(rms_data);
     ds = compute_d(errors);
     psi_hats = compute_psi_hats(ds);
-    
-    corrected = correct_cfo(data, psi_hats);
+        
+    corrected = correct_cfo(rms_data, psi_hats);
 end
+
     
     
     
