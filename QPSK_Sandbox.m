@@ -1,45 +1,21 @@
 clear;
-[rx, tx] = open_data('rx2.dat','tx.dat');
-
+[rx, tx] = open_data('rx.dat','tx_20.dat');
 %%
-plot(rx(100000:160000));
+plot(real(rx(12250000:13230000)))
 %%
-
-%rx = trim_data(rx, 0.01);
-%rx = rx(6400000:8500000); % rx4 trim
-rx = rx(15300000:17400000); % rx2 trim
-%rx = rx(14000000:16200000); % rx_10000_2 trim
-%rx = rx(11700000:22000000); % rx_50000_2 trim
-%rx = rx(6700000:17000000); % rx trim
-%rx = rx(12200000:13300000);
-%rx = rx(8600000:9000000);
-%%
-rx = rx(894000:900000);
-%%
-[phi, f_delta] = estimate_cfo(rx(20000:24000));
-corrected_data = cfo_correct(rx(20000:24000), phi, f_delta);
-%%
-corrected = costas_loop(rx);
+rx = rx(12250000:13230000);
 %%
 alt_corrected = alt_costas_loop(rx);
-%%
-errors = compute_errors(rx);
-ds = compute_d(errors);
-psi = compute_psi_hats(ds);
-plot();
-%%
-plot(rx)
+
 %%
 plot(rx, 'r.')
 hold on
-plot(real(alt_corrected), imag(alt_corrected),'b.');
+plot(real(alt_corrected), imag(alt_corrected),'b.'); % plot uncorrected and corrected data to see difference
 %%
-
+rx_bits = decode_data(alt_corrected);
 tx_bits = decode_data(tx);
-rx_bits = decode_data(corrected_data);
-
 %%
-plot(rx)
+error = nnz(rx_bits+tx_bits)
 
 
 
@@ -151,8 +127,8 @@ function errors = compute_errors(data)
 end
 
 function ds = compute_d(errors)
-    beta = 0.2;
-    alpha = 0.01;
+    beta = 0.1;
+    alpha = 0.05;
     ds = ones(size(errors));
     
     for i = [1:1:size(errors, 1)]
@@ -196,18 +172,19 @@ function corrected = costas_loop(data);
 end
 
 function alt_corrected = alt_costas_loop(data)
-    beta = 0.1;
-    alpha = 0.01;
+    beta = 0.5;
+    alpha = 0.05;
     error_sum = 0;
     psi_hat = 0;
     alt_corrected = zeros(size(data));
     
-    rms_data = data./(rms(abs(data)));
+    %rms_data = data./(rms(abs(data)));
+    rms_data = data;
     
-    for i = [1:1:size(data,1)]
-        alt_corrected(i) = data(i).*exp(-j.*psi_hat);
+    for k = [1:1:size(data,1)]
+        alt_corrected(k) = rms_data(k).*exp(1i.*psi_hat);
         
-        error = -(sign(real(data(i))).*imag(data(i))) + (sign(imag(data(i))).*real(data(i)));
+        error = -(sign(real(alt_corrected(k))).*imag(alt_corrected(k))) + (sign(imag(alt_corrected(k))).*real(alt_corrected(k)));
         
         error_sum = error_sum + error;
         
@@ -222,6 +199,8 @@ function alt_corrected = alt_costas_loop(data)
         if psi_hat > pi
             psi_hat = psi_hat - (2.*pi);
         end
+        
+        %alt_corrected(k) = rms_data(k).*exp(1i.*psi_hat);
     end
 end
         
