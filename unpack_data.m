@@ -35,4 +35,9 @@ function unpacked_data = unpack_data(rx_filename)
             end
         end
     end 
+    
+    % assumes that unpacked data includes known bits
+    data_length_binary = unpacked_data(201:220);
+    data_length = bi2de(data_length_binary, 'left-msb');
+    unpacked_data = unpacked_data(221:220+data_length);
 end
