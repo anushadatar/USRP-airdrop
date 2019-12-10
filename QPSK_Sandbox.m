@@ -3,28 +3,24 @@ clear;
 %%
 trimmed = trim_data('rx.dat');
 %%
-plot(real(trimmed));
-%%
-%%
-pulse_size = 20;
+pulse_size = 20; % this is trying to sample at the center of each pulse, you don't need to run this
 sampled_rx = zeros(round(size(trimmed)./pulse_size)-1);
 
 for i = [1:1:(size(rx)./pulse_size)]
     sampled_rx(i,1) = trimmed((pulse_size./2)+(pulse_size.*i));
 end
 %%
-alt_corrected = alt_costas_loop(sampled_rx);
-
-%%
-plot(trimmed, 'r.')
+alt_corrected = alt_costas_loop(rx);
+   
+plot(rx, 'r.')
 hold on
 plot(real(alt_corrected), imag(alt_corrected),'b.'); % plot uncorrected and corrected data to see difference
 %%
 
-rx_bits = decode_data(alt_corrected);
+rx_bits = decode_data(alt_corrected); % this takes the corrected symbols and turns them into bits
 tx_bits = decode_data(sampled_tx);
 %%
-error = nnz(rx_bits+tx_bits)
+error = nnz(rx_bits+tx_bits) % this finds num of differences between tx and rx
 
 
 
@@ -181,8 +177,8 @@ function corrected = costas_loop(data);
 end
 
 function alt_corrected = alt_costas_loop(data)
-    beta = 0.1;
-    alpha = 0.01;
+    beta = 2;
+    alpha = 0.009;
     error_sum = 0;
     psi_hat = 0;
     alt_corrected = zeros(size(data));
