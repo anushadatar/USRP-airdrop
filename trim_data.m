@@ -17,27 +17,35 @@ function  filtered_data = trim_data(rx)
     tmp = fread(f1,'float32');
     fclose(f1);
     rx = tmp(1:2:end)+1i*tmp(2:2:end);
-    len_transmit = 2e6
+    len_transmit = 10004019
 
 %full_sig = datastream
 %figure(1)
 %plot(real(rx))
-known_sig = ones(100,1)';
+p = ones(20,1);
+x = conv(rx, p);
+plot(real(x))
+t = linspace(0,4000,4000);
+known_sig = -sin(2*pi*(.03)*t);
+% known_sig = ones(4000,1)';
 [xCorr,lags] = xcorr(rx,known_sig);
-
-%figure(2)
-
-%plot(lags,xCorr)
-%title('xcor')
-%
+% %best known signal for data 
+% %figure(2)
+% 
+% %plot(lags,xCorr)
+% %title('xcor')
+% %
 [~,I] = max(abs(xCorr));
 maxt = lags(I);
-new_rx = rx(maxt-20000:end);
-
-newer_rx = rx(maxt:len_transmit);
-
+new_rx = rx(maxt:len_transmit+4000);
+newer_rx_no_known = rx(maxt+4000:len_transmit);
+% figure(1)
+% hold on
+figure(2)
 plot(real(new_rx))
-%
- filtered_data = new_rx
+figure(3)
+plot(real(newer_rx_no_known))
+% %
+%  filtered_data = newer_rx
 
 end
