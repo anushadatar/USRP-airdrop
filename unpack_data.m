@@ -5,6 +5,7 @@ function unpacked_data = unpack_data(rx_filename)
     fclose(f1);
     % Add real and complex values for each data point from the saved file.
     data_points = raw_rx_data(1:2:end)+1i*raw_rx_data(2:2:end);
+    
     % TODO: All of the part that is actual work - 
         % Decode none bits to find phase offset
         % Magnitude/temporal error correction
