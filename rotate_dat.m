@@ -1,4 +1,4 @@
-function [trimmed_rotated,rotate_angle] = find_rotate(unsmeared_dat,inputArg2)
+function [trimmed_rotated,rotate_angle] = rotate_dat(unsmeared_dat,inputArg2)
 %FIND_ROTATE finds the rotated angle of the known bits at the beginning of
 %transmission. Return angle and datas
 %   Detailed explanation goes here
