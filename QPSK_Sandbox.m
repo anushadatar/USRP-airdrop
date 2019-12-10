@@ -1,19 +1,28 @@
 clear;
 [rx, tx] = open_data('rx.dat','tx_20.dat');
 %%
-plot(real(rx(12250000:13230000)))
+trimmed = trim_data('rx.dat');
 %%
-rx = rx(12250000:13230000);
+plot(real(trimmed));
 %%
-alt_corrected = alt_costas_loop(rx);
+%%
+pulse_size = 20;
+sampled_rx = zeros(round(size(trimmed)./pulse_size)-1);
+
+for i = [1:1:(size(rx)./pulse_size)]
+    sampled_rx(i,1) = trimmed((pulse_size./2)+(pulse_size.*i));
+end
+%%
+alt_corrected = alt_costas_loop(sampled_rx);
 
 %%
-plot(rx, 'r.')
+plot(trimmed, 'r.')
 hold on
 plot(real(alt_corrected), imag(alt_corrected),'b.'); % plot uncorrected and corrected data to see difference
 %%
+
 rx_bits = decode_data(alt_corrected);
-tx_bits = decode_data(tx);
+tx_bits = decode_data(sampled_tx);
 %%
 error = nnz(rx_bits+tx_bits)
 
@@ -172,8 +181,8 @@ function corrected = costas_loop(data);
 end
 
 function alt_corrected = alt_costas_loop(data)
-    beta = 0.5;
-    alpha = 0.05;
+    beta = 0.1;
+    alpha = 0.01;
     error_sum = 0;
     psi_hat = 0;
     alt_corrected = zeros(size(data));
