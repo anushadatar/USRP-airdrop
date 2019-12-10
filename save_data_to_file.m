@@ -5,16 +5,12 @@ function[] = save_data_to_file(packed_data, tx_filename)
     % Replace 0s with -1s.
     packed_data(packed_data == 0) = -1;
     
-    % Add extra bit if length is odd.
-    if mod(packed_data, 2) == 1
-        packed_data = [packed_data -1];
-    end
     % I contains odd bits, Q contains even bits
     bits_I = packed_data(1:2:end);
     bits_Q = packed_data(2:2:end);
     m_k = amplitude*bits_I+j*bits_Q;
     % Convolve the data bits with a pulse.
-    pulse_length = 100;
+    pulse_length = 20;
     p = ones(pulse_length,1);
     x = conv(upsample(m_k, pulse_length), p);
     
