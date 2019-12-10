@@ -8,7 +8,7 @@ To transmit the saved file across the channel, open up an administrative command
 the path to the transmit file following --file and the serial number of your radio following --args "serial") to navigate
 to the appropriate directory and send over the file.
 ```bash
-cd C:\Program Files\UHD\lib\uhd\examples>
+cd C:\Program Files\UHD\lib\uhd\examples
 
 tx_samples_from_file ‐‐freq 2478e6 ‐‐rate 2e6 ‐‐type float ‐‐args "serial=30CD3D7" ‐‐ant "TX/RX" ‐‐subdev "A:A" --gain 60 --file tx.dat
 ```
@@ -18,7 +18,7 @@ To receive the ddata from the transmitted file, open up an open up an administra
 the path to the location for the received file following --file and the serial number of your radio following --args "serial") to navigate
 to the appropriate directory and send over the file.
 ```bash
-cd C:\Program Files\UHD\lib\uhd\examples>
+cd C:\Program Files\UHD\lib\uhd\examples
 
 rx_samples_to_file ‐‐freq 2478e6 ‐‐rate 2e6 ‐‐type float ‐‐args "serial=30CF9A5" ‐‐ant "TX/RX" ‐‐subdev "A:A" --gain 40 --file rx.dat
 ```

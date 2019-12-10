@@ -1,11 +1,13 @@
 function  packet = photo2data(image_file)
-    %input:  converts color photo to bw to sendable datastream
-    %       image_file = "path_to_image.jpg"
-    %   
-    %output: 
-    % im_size = array of row and column size
-    % packet = concatonated binary data stream including size of picture and
-    % data
+    % Converts image file into data bits. In the process, it converts
+    % color images and black and white images.
+    % Input: image_file = String path to image file.
+    %
+    % Output: im_size = Array of row size and column size for the image.
+    %         packet  = Concatenated binary data stream including both the
+    %                   size of the picture in the first 20 bits and the 
+    %                   data bits.
+
     image = imread(image_file);
     bw_image =im2bw(image);
     [size_row size_col] = size(bw_image);

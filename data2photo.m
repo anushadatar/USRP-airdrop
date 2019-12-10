@@ -1,8 +1,8 @@
 function  data2photo(dataStream)
-% converts bitstream into image
-%input:  Photo file 
-%       datastream = output of data2photo includes size of image and data
-%output: bit stream
+    % converts bitstream into image
+    %input:  Photo file 
+    %        = output of data2photo includes size of image and data
+    %output: bit stream
 
     size_row = bi2de(dataStream(1:10),'left-msb')
     size_col = bi2de(dataStream(11:20), 'left-msb')
