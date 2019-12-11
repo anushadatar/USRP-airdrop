@@ -1,19 +1,19 @@
 function  compressed_data = compress(packet)
-    % compresses bitstream
-    % input: bitstream 
-    % output: bitstream
+    % Compresses bitstream using Lempel-Ziv compression algorithm. 
+    % Input:  packet          = Bitstream from image file to compress.
+    % Output: compressed_data = Comrpessed bitstream to transmit.
 
-    % finagle packet array into string
+    % Finagle packet array into a string.
     input = join(string(packet), '');
     input = input{1};
     
-    % initialize dictionary and variables
+    % Initialize associated dictionary and variables.
     keySet = {'0' '1'};
     valueSet = [0 1];
     lzw_dict = containers.Map(keySet, valueSet);
-    val = 1;    % value of last key in dictionary
+    val = 1;    % Value of the last key in the dictionary.
     encoded = '';
-    b_len = 13;  % length of binary string
+    b_len = 13;  % Length of binary string. 
     
     % 1. input first byte, store in STRING
     string_ = input(1);
@@ -55,8 +55,8 @@ function  compressed_data = compress(packet)
     % 9. output the code for STRING
     encoded = strcat(encoded,str_joined);
     
-    % turn encoded string into array
-    compressed_data = [];
+    % Turn the encoded string into an array.
+    compressed_data = zeros(size(encoded));
     for i = 1:length(encoded)
         compressed_data(i) = str2double(encoded(i));
     end
