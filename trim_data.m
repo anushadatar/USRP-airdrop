@@ -1,4 +1,4 @@
-function  filtered_data = trim_data(rx)
+function  [trimmed_w_known trimmed_no_known] = trim_data(rx)
 %function inputs recieved raw data and ouputs cleaned data with front end noise removed and "known bits" removed. 
 %It also outputs the angle in which
 %the data is rotated in the constellation for future correction. 
@@ -26,9 +26,9 @@ p = ones(20,1);
 x = conv(rx, p);
 plot(real(x))
 t = linspace(0,4000,4000);
-known_sig = -sin(2*pi*(.03)*t);
+known_sig = cos(2*pi*(.003)*t);
 % known_sig = ones(4000,1)';
-[xCorr,lags] = xcorr(rx,known_sig);
+[xCorr,lags] = xcorr(x,known_sig);
 % %best known signal for data 
 % %figure(2)
 % 
@@ -47,5 +47,7 @@ figure(3)
 plot(real(newer_rx_no_known))
 % %
 %  filtered_data = newer_rx
+trimmed_w_known = new_rx;
+trimmed_no_known = newer_rx_no_known;
 
 end
