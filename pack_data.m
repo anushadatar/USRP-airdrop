@@ -11,7 +11,6 @@ function prepared_data = pack_data(compressed_data)
     % 201:220 - length of compressed data (in binary)
     % 221:(220+length(compressed_data)) - compressed data
     % rest is padding (0s)
-
     
     % Add known bits and pad the end with 0s to match the final length.
     final_length = 100000;
@@ -36,6 +35,6 @@ function prepared_data = pack_data(compressed_data)
     % Store each symbol as a complex number. 
     m_k = amplitude*bits_I+1i*bits_Q;
     p = ones(pulse_length,1);
-    prepared_data = conv(upsample(m_k, pulse_length), p);
-    
+    prepared_data = conv(upsample(m_k, pulse_length), p); 
+
 end
