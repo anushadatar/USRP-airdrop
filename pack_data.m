@@ -26,15 +26,17 @@ function prepared_data = pack_data(compressed_data)
     % Pad remaining space in vector with 0s to meet final length. 
     packed_data = amplitude.*[known_compressed zeros(1,final_length-length(known_compressed))];
 
-% %     I contains odd bits, Q contains even bits.
+    % I contains odd bits, Q contains even bits.
     bits_I = packed_data(1:2:end);
     bits_Q = packed_data(2:2:end);
-% %     Store each symbol as a complex number. 
+    % Store each symbol as a complex number. 
     m_k = (bits_I)+(1i*bits_Q);
-%  
+    
+    % Convolve and upsample with a pulse.
     p = ones(pulse_length,1);
     prepared_data = conv(upsample(m_k, pulse_length), p, 'same');
-%   Ensure even length of signal.
+    
+    % Ensure even length of signal.
     if mod(length(prepared_data), 2)
         prepared_data = [prepared_data 0];
     end
