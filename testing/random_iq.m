@@ -1,5 +1,5 @@
 N=1e5;
-pulse_length = 20;
+pulse_length = 100;
 fname = 'tx.dat';
 % make random sequence of bits
 bits_I  = 0.5*sign(randn(N,1));

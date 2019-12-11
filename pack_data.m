@@ -22,19 +22,23 @@ function prepared_data = pack_data(compressed_data)
     pulse_length = 100;
     
     % Adjust length of signal.
-    known_data = ones(1,known_data_length);
-    compressed_length = de2bi(length(compressed_data), pulse_length, 'left-msb');
+    known_data = ones(1, known_data_length*2);
+
+    compressed_length = de2bi(length(compressed_data), 20, 'left-msb');
     known_compressed = [known_data compressed_length compressed_data];
-    packed_data = [known_compressed zeros(1,final_length-length(known_compressed))];
-    
+
     % Replace 0s with -1s.
-    packed_data(packed_data == 0) = -1;
+    known_compressed(known_compressed == 0) = -1;
+    packed_data = [known_compressed zeros(1,final_length-length(known_compressed))];
+
     % I contains odd bits, Q contains even bits.
     bits_I = packed_data(1:2:end);
     bits_Q = packed_data(2:2:end);
     % Store each symbol as a complex number. 
-    m_k = amplitude*bits_I+1i*bits_Q;
+    m_k = amplitude*bits_I+amplitude*1i*bits_Q;
     p = ones(pulse_length,1);
-    prepared_data = conv(upsample(m_k, pulse_length), p); 
-
+    prepared_data = conv(upsample(m_k, pulse_length), p);
+    if mod(length(prepared_data), 2)
+        prepared_data = [prepared_data 0];
+    end
 end

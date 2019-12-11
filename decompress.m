@@ -1,8 +1,7 @@
-function  decompressed_data = decompress(packet)
+function  decompressed_data = decompress(input)
     % Decompresses bitstream using Lempel-Ziv compression algorithm. 
-    % Input:  packet            = Compressed bitstream to decompress.
+    % Input:  input             = Compressed bitstream to decompress.
     % Output: decompressed_data = Decompressed image bitstream.
-    input = packet;
     
     % Initialize dictionary and variables.
     keySet = {'0' '1'};

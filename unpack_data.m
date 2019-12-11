@@ -1,30 +1,20 @@
 function unpacked_data = unpack_data(rx_filename)
-    % TODO: Grab data from file, remove redundancy.
     rx_file = fopen(rx_filename, 'r');
     raw_rx_data = fread(rx_file,'float32');
-    fclose(f1);
-    % Add real and complex values for each data point from the saved file.
-    data_points = raw_rx_data(1:2:end)+1i*raw_rx_data(2:2:end);
-    
+    fclose(rx_file);
+    % Add real and complex values for each data point from the saved file.%
+    cleared_data = raw_rx_data(1:2:end)+1i*raw_rx_data(2:2:end);
     % TODO: All of the part that is actual work - 
         % Decode none bits to find phase offset
         % Magnitude/temporal error correction
-        % Removal of redundancy
-        %         % round the average of every 3 bits
-        %         for i = 1:3:length(redundant_data)
-        %             essential_data((i+2)/3) = round(mean(redundant_data(i:i+2)));
-        %         end
-   
-    cleared_data = data_points;
-    unpacked_data = zeros(2*length(data_points));
-    for index = 1 : length(N)
+    unpacked_data = zeros(2*length(cleared_data), 1);
+    for index = 1 : length(cleared_data)
         if real(cleared_data(index)) > 0
             unpacked_data(2*index-1) = 1;
             if imag(cleared_data(index)) > 0
                 unpacked_data(2*index) = 1;
             else
                 unpacked_data(2*index) = 0;
-        
             end
         else
             unpacked_data(2*index-1) = 0;
@@ -34,10 +24,13 @@ function unpacked_data = unpack_data(rx_filename)
                 unpacked_data(2*index) = 0;
             end
         end
-    end 
-    
+    end
+    disp(length(unpacked_data));
     % assumes that unpacked data includes known bits
-    data_length_binary = unpacked_data(201:220);
-    data_length = bi2de(data_length_binary, 'left-msb');
-    unpacked_data = unpacked_data(221:220+data_length);
+    data_length_binary = unpacked_data(401:420);
+    disp(size(data_length_binary))
+    disp(data_length_binary)
+    data_length = bi2de(data_length_binary', 'left-msb');
+    disp(data_length);
+    unpacked_data = unpacked_data(420:420+data_length);
 end
