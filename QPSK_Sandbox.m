@@ -1,36 +1,30 @@
 %% Open RX and TX
 clear
-[rx, tx] = open_data('rx.dat', 'tx.dat');
+[rx, tx] = open_data('rx.dat', 'color_chicken.dat');
+
 %%
-[trimmed_w_known, trimmed_no_known] = trim_data('rx_sam.dat');
+[trimmed_w_known, trimmed_no_known] = trim_data('rx.dat'); % this still doesn't call correctly from livescript
+
 %% Run Costas Loop and plot the corrected data 
 corrected = costas_loop(trimmed_w_known);
-plot(real(corrected(1:20000)), imag(corrected(1:20000)),'b.'); 
+
+plot(real(corrected(1:1000)), imag(corrected(1:1000)),'r.'); % plot to visually find angle of rotation
 
 %% Spin data by some angle and plot (this will eventually be integrated with rotate_dat)
-angle = -pi./2;
-spun_corrected=corrected.*exp(1i*angle);
-   
-plot(real(spun_corrected), imag(spun_corrected),'b.'); 
+[spun_corrected, angle] = rotate_dat(corrected);
+
 %% Sample data to get symbols
-pulse_width = 100;
+pulse_width = 50;
 
 sampled_rx = sample_data(spun_corrected, pulse_width);
-sampled_tx = sample_data(tx, pulse_width);
-%%
-plot(real(sampled_rx), imag(sampled_rx),'b.'); 
+sampled_tx = downsample(tx, 50); 
 
 %% Decode symbols into individual bits
 rx_bits = decode_data(sampled_rx); 
 tx_bits = decode_data(sampled_tx);
 
-%%
-plot(rx_bits(1:500))
-hold on
-%plot(tx_bits)
-
 %% Check error between received and transmitted bits
-error = size(rx_bits,1) - nnz(rx_bits+tx_bits) % this finds num of differences between tx and rx
+error = nnz(rx_bits(397:397+999)+tx_bits(401:1400)) % this finds num of differences between tx and rx
 
 
 
@@ -116,12 +110,13 @@ end
 
 function sampled_data = sample_data(data, pulse_size)
     sampled_data = zeros(round(size(data)./pulse_size));
+    offset = 50;
 
     for i = [1:1:(size(data)./pulse_size)-1]
-        if ((pulse_size./2)+(pulse_size.*i)) > size(data)
+        if (offset+(pulse_size.*i)) > size(data)
             sampled_data(i, 1) = 0;
         end
-        sampled_data(i,1) = data((pulse_size./2)+((pulse_size.*i)));
+        sampled_data(i,1) = data(offset+((pulse_size.*i)));
     end
 end        
  

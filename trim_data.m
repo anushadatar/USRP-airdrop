@@ -1,4 +1,4 @@
-function  [trimmed_w_known trimmed_no_known] = trim_data(rx)
+function  [trimmed_w_known, trimmed_no_known] = trim_data(rx)
 %function inputs recieved raw data and ouputs cleaned data with front end noise removed and "known bits" removed. 
 %It also outputs the angle in which
 %the data is rotated in the constellation for future correction. 
@@ -17,16 +17,17 @@ function  [trimmed_w_known trimmed_no_known] = trim_data(rx)
     tmp = fread(f1,'float32');
     fclose(f1);
     rx = tmp(1:2:end)+1i*tmp(2:2:end);
-    len_transmit = 10004019
+    len_transmit = 2500050
 
 %full_sig = datastream
 %figure(1)
 %plot(real(rx))
-p = ones(20,1);
+p = ones(50,1);
 x = conv(rx, p);
 plot(real(x))
-t = linspace(0,4000,4000);
-known_sig = cos(2*pi*(.003)*t);
+t = linspace(0,20000,20000);
+load('known_sig.mat');
+%known_sig = cos(10*pi*(.015)*t);
 % known_sig = ones(4000,1)';
 [xCorr,lags] = xcorr(x,known_sig);
 % %best known signal for data 
@@ -36,9 +37,9 @@ known_sig = cos(2*pi*(.003)*t);
 % %title('xcor')
 % %
 [~,I] = max(abs(xCorr));
-maxt = lags(I);
-new_rx = rx(maxt:len_transmit+4000);
-newer_rx_no_known = rx(maxt+4000:len_transmit);
+maxt = lags(I)
+new_rx = rx(maxt:len_transmit+maxt-1);
+newer_rx_no_known = rx(maxt+10000:len_transmit+maxt-1);
 % figure(1)
 % hold on
 figure(2)
