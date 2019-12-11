@@ -1,28 +1,33 @@
-
+%% Open RX and TX
+clear
+[rx, tx] = open_data('rx.dat', 'tx.dat');
+%%
 [trimmed_w_known, trimmed_no_known] = trim_data('rx_sam.dat');
 %% Run Costas Loop and plot the corrected data 
 corrected = costas_loop(trimmed_w_known);
-plot(real(corrected), imag(corrected),'b.'); 
+plot(real(corrected(1:20000)), imag(corrected(1:20000)),'b.'); 
 
 %% Spin data by some angle and plot (this will eventually be integrated with rotate_dat)
-angle = (3.*pi)./2;
+angle = -pi./2;
 spun_corrected=corrected.*exp(1i*angle);
    
 plot(real(spun_corrected), imag(spun_corrected),'b.'); 
 %% Sample data to get symbols
-pulse_width = 20;
+pulse_width = 100;
 
 sampled_rx = sample_data(spun_corrected, pulse_width);
 sampled_tx = sample_data(tx, pulse_width);
+%%
+plot(real(sampled_rx), imag(sampled_rx),'b.'); 
 
 %% Decode symbols into individual bits
 rx_bits = decode_data(sampled_rx); 
 tx_bits = decode_data(sampled_tx);
 
 %%
-plot(rx_bits)
+plot(rx_bits(1:500))
 hold on
-plot(tx_bits)
+%plot(tx_bits)
 
 %% Check error between received and transmitted bits
 error = size(rx_bits,1) - nnz(rx_bits+tx_bits) % this finds num of differences between tx and rx
@@ -78,8 +83,8 @@ function decoded_data = decode_data(data)
 end
 
 function corrected = costas_loop(data)
-    beta = 2.5;
-    alpha = 0.009;
+    beta = 3;
+    alpha = 0.01;
     error_sum = 0;
     psi_hat = 0;
     corrected = zeros(size(data));
@@ -112,7 +117,7 @@ end
 function sampled_data = sample_data(data, pulse_size)
     sampled_data = zeros(round(size(data)./pulse_size));
 
-    for i = [1:1:(size(data)./pulse_size)]
+    for i = [1:1:(size(data)./pulse_size)-1]
         if ((pulse_size./2)+(pulse_size.*i)) > size(data)
             sampled_data(i, 1) = 0;
         end
