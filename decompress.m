@@ -1,17 +1,16 @@
 function  decompressed_data = decompress(packet)
-    % decompresses bitstream
-    % input: bitstream 
-    % output: bitstream
-
+    % Decompresses bitstream using Lempel-Ziv compression algorithm. 
+    % Input:  packet            = Compressed bitstream to decompress.
+    % Output: decompressed_data = Decompressed image bitstream.
     input = packet;
     
-    % initialize dictionary and variables
+    % Initialize dictionary and variables.
     keySet = {'0' '1'};
     valueSet = [0 1];
     lzw_dict = containers.Map(valueSet, keySet);
     char = '';
     val = 1;
-    b_len = 13; % length of binary string
+    b_len = 13; % Length of binary string.
     
     % 1. input first code, store in OCODE
     ocode_b = input(1:b_len);
@@ -46,8 +45,8 @@ function  decompressed_data = decompress(packet)
         val = val+1;
     end
     
-    % turn decoded string into array
-    decompressed_data = [];
+    % Turn the decoded string into an array.
+    decompressed_data = zeros(size(decoded));
     for i = 1:length(decoded)
         decompressed_data(i) = str2double(decoded(i));
     end
