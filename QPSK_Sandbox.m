@@ -1,30 +1,32 @@
 %% Open RX and TX
 clear
-[rx, tx] = open_data('rx.dat', 'color_chicken.dat');
+[rx, tx] = open_data('rx2.dat', 'tx_500_conv.dat');
 
 %%
-[trimmed_w_known, trimmed_no_known] = trim_data('rx.dat'); % this still doesn't call correctly from livescript
+[trimmed_w_known, trimmed_no_known] = trim_data('rx.dat', 50); % this still doesn't call correctly from livescript
 
 %% Run Costas Loop and plot the corrected data 
 corrected = costas_loop(trimmed_w_known);
-
-plot(real(corrected(1:1000)), imag(corrected(1:1000)),'r.'); % plot to visually find angle of rotation
 
 %% Spin data by some angle and plot (this will eventually be integrated with rotate_dat)
 [spun_corrected, angle] = rotate_dat(corrected);
 
 %% Sample data to get symbols
-pulse_width = 50;
+pulse_width = 500;
+pulse = ones(pulse_width, 1);
 
 sampled_rx = sample_data(spun_corrected, pulse_width);
-sampled_tx = downsample(tx, 50); 
+sampled_tx = downsample(tx, pulse_width); 
 
 %% Decode symbols into individual bits
 rx_bits = decode_data(sampled_rx); 
 tx_bits = decode_data(sampled_tx);
 
+%%
+plot(rx_bits(1:400))
+
 %% Check error between received and transmitted bits
-error = nnz(rx_bits(397:397+999)+tx_bits(401:1400)) % this finds num of differences between tx and rx
+error = nnz(rx_bits(418:418+83940)+tx_bits(420:420+83940)) % this finds num of differences between tx and rx
 
 
 
@@ -56,16 +58,6 @@ function [rx, tx] = open_data(rx_filename, tx_filename)
     tx = tmp2(1:2:end)+1i*tmp2(2:2:end);
 end
 
-function trimmed_data = trim_data(data, threshold)
-
-    % Cut out data that is not from the transmission.
-    % this can be improved with cross-correlation with noise?
-    center_y = data; %(floor((size(y)/2)):end);
-    magnitude = sqrt(real(center_y).^2 + imag(center_y).^2);
-    trimmed_data = center_y(magnitude > threshold);
-
-    plot(real(center_y)) % plot scrambled data
-end
 
 function decoded_data = decode_data(data)
     decoded_data = zeros(size(data,1).*2,1);
@@ -110,7 +102,7 @@ end
 
 function sampled_data = sample_data(data, pulse_size)
     sampled_data = zeros(round(size(data)./pulse_size));
-    offset = 50;
+    offset = 150;
 
     for i = [1:1:(size(data)./pulse_size)-1]
         if (offset+(pulse_size.*i)) > size(data)
