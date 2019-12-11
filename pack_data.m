@@ -5,30 +5,25 @@ function prepared_data = pack_data(compressed_data)
     % Input : compressed_data = An array of individual bits to transmit.
     % Output: prepared_data = An array of packed data ready to convolve 
     %                         with a pulse and saved to a file. 
-    
-    % Current scheme (may need to be changed when 
-    % 1:200 - known data (1s)
-    % 201:220 - length of compressed data (in binary)
-    % 221:(220+length(compressed_data)) - compressed data
-    % rest is padding (0s)
-    
-    % Add known bits and pad the end with 0s to match the final length.
+        
+    % Final length that each transmission should be in total. 
     final_length = 100000;
     % Length (in bits) of known bits for data signal.
     known_data_length = 200;
-    % Amplitude value for the signal.
+    % Amplitude value for the signal overall. 
     amplitude = 0.5;
     % Length of the pulse to convolve the data bits with.
     pulse_length = 100;
     
-    % Adjust length of signal.
+    % Create known data vector.
     known_data = ones(1, known_data_length*2);
-
+    % Set binary value of signal length.
     compressed_length = de2bi(length(compressed_data), 20, 'left-msb');
+    % Create signal containing known data, length, then real data.
     known_compressed = [known_data compressed_length compressed_data];
-
     % Replace 0s with -1s.
     known_compressed(known_compressed == 0) = -1;
+    % Pad remaining space in vector with 0s to meet final length. 
     packed_data = [known_compressed zeros(1,final_length-length(known_compressed))];
 
     % I contains odd bits, Q contains even bits.
@@ -38,6 +33,7 @@ function prepared_data = pack_data(compressed_data)
     m_k = amplitude*bits_I+amplitude*1i*bits_Q;
     p = ones(pulse_length,1);
     prepared_data = conv(upsample(m_k, pulse_length), p);
+    % Ensure even length of signal.
     if mod(length(prepared_data), 2)
         prepared_data = [prepared_data 0];
     end

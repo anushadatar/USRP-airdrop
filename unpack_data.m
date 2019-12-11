@@ -1,4 +1,9 @@
 function unpacked_data = unpack_data(rx_filename)
+    % Unpacks received file from B210 radio to reveal bits originally
+    % transmitted. 
+    % Input :  rx_filename   = Path to file containing the recevied data.
+    % Output : unpacked_data = Image file data, still compressed. 
+    
     rx_file = fopen(rx_filename, 'r');
     raw_rx_data = fread(rx_file,'float32');
     fclose(rx_file);
@@ -7,6 +12,8 @@ function unpacked_data = unpack_data(rx_filename)
     % TODO: All of the part that is actual work - 
         % Decode none bits to find phase offset
         % Magnitude/temporal error correction
+    % From here on, we assume that we have data that is made up of complex
+    % numbers containing first the known data, then 
     unpacked_data = zeros(2*length(cleared_data), 1);
     for index = 1 : length(cleared_data)
         if real(cleared_data(index)) > 0
@@ -26,11 +33,10 @@ function unpacked_data = unpack_data(rx_filename)
         end
     end
     disp(length(unpacked_data));
-    % assumes that unpacked data includes known bits
+    % Assumes that known data is 400 bits (200 real and 200 imaginary) and
+    % includes 20 bits of the size of the actual signal.
     data_length_binary = unpacked_data(401:420);
-    disp(size(data_length_binary))
-    disp(data_length_binary)
     data_length = bi2de(data_length_binary', 'left-msb');
-    disp(data_length);
+    % Actual unpack data to return to the main function.
     unpacked_data = unpacked_data(420:420+data_length);
 end
