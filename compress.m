@@ -58,6 +58,6 @@ function  compressed_data = compress(packet)
     % Turn the encoded string into an array.
     compressed_data = zeros(size(encoded));
     for i = 1:length(encoded)
-        compressed_data(i) = str2double(encoded(i));
+        compressed_data(i) = n(encoded(i));
     end
 end

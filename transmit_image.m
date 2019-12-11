@@ -12,5 +12,5 @@ function[] = transmit_image(image_file, tx_filename)
     % Add redundancy and known bits.
     packed_data = pack_data(compressed_data);
     % Save the data to the specified file location.
-    save_data_to_file(packed_data, tx_filename)
+    write_usrp_data_file(packed_data, tx_filename);
 end
