@@ -2,15 +2,8 @@ function  filtered_data = clean_data(rx)
 % Reads in received raw file data and removes noise from prior to
 % transmission and the known bits. Also calculates angle of the rotation of
 % the constellation from the channel for further correction/
-% rx : 
-    function inputs recieved raw data and ouputs cleaned data with front end noise removed and "known bits" removed. 
-%It also outputs the angle in which
-%the data is rotated in the constellation for future correction. 
-%input:  raw data stream. Vector 1xN
-%   
-%output: 
-%  filetered data:  vector 1xM
-
+% Input:  rx            = Received data from transmission 
+% Output: filtered_data = Filtered information from the file.
 %the known signal is 100 1s. 
 
 % NOT FULLY WORKING YET
