@@ -13,30 +13,37 @@
 % % plot(real(spun_corrected))
 
 function receive_data(rx_filename, pulse_width)
-    [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
+    % Process the received data file to extract the image.
+    % Input:  rx_filename = The received data file.
+    %         pulse_width = The width of the pulse convolved with the data.
+    % Output: Displays the photo decoded from the data.
     
+    [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
+    % Use a costas loop to correct for frequency error.
     corrected = costas_loop(rx);
 
     % Trim data to only include transmission
-    [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width); % this still doesn't call correctly from livescript
-
-    % Run Costas Loop and plot the corrected data
+    [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width); 
+    
+    % DEBUG: Run Costas Loop and plot the corrected data
     %corrected = costas_loop(trimmed_w_known);
 
-    % Spin data by some angle and plot (this will eventually be integrated with rotate_dat)
+    % Rotate data based on the angle of the offset from the original 
+    % constellation (found using rotate_dat).
     [spun_corrected, angle] = rotate_dat(trimmed_w_known);
     
+    % DEBUG: Checl for rotation.
     %figure(3)
     %plot(real(spun_corrected));
 
-    % Sample data to get symbols
+    % Sample data to get symbols.
     sampled_rx = sample_data(spun_corrected, pulse_width);
     sampled_tx = downsample(tx, pulse_width);
 
-    % Decode symbols into individual bits
+    % Decode symbols into individual bits.
     rx_bits = decode_data(sampled_rx);
     tx_bits = decode_data(sampled_tx);
-    %%
+    % Convert bits
     rx_bits(rx_bits == -1) = 0;
 
     start_indices = find(~rx_bits);
