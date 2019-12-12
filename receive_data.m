@@ -1,16 +1,30 @@
+% rx_filename = 'rx_pulse_width_500.dat';
+% pulse_width = 500;
+% % % % %%
+% [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
+% %%
+% corrected = costas_loop(rx);
+% [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width);
+% [spun_corrected, angle] = rotate_dat(corrected);
+% 
+% plot(real(spun_corrected))
 
 function receive_data(rx_filename, pulse_width)
-    clear
-    [rx, tx] = open_data('rx_pulse_width_500.dat', 'tx_500_conv.dat');
+    [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
+    
+    corrected = costas_loop(rx);
 
     % Trim data to only include transmission
-    [trimmed_w_known, trimmed_no_known] = trim_data(rx_filename, pulse_width); % this still doesn't call correctly from livescript
+    [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width); % this still doesn't call correctly from livescript
 
     % Run Costas Loop and plot the corrected data
-    corrected = costas_loop(trimmed_w_known);
+    %corrected = costas_loop(trimmed_w_known);
 
     % Spin data by some angle and plot (this will eventually be integrated with rotate_dat)
-    [spun_corrected, angle] = rotate_dat(corrected);
+    [spun_corrected, angle] = rotate_dat(trimmed_w_known);
+    
+    %figure(3)
+    %plot(real(spun_corrected));
 
     % Sample data to get symbols
     sampled_rx = sample_data(spun_corrected, pulse_width);
@@ -23,12 +37,25 @@ function receive_data(rx_filename, pulse_width)
     rx_bits(rx_bits == -1) = 0;
 
     start_indices = find(~rx_bits);
-    start_index = start_indices(1);
+    
+    if start_indices(1) > 350
+        start_index = start_indices(1)
+        indices = 1
+    elseif start_indices(2) > 350
+        start_index = start_indices(2)
+        indices = 2
+    elseif start_indices(3) > 350
+        start_index = start_indices(3)
+        indices = 3
+    else 
+        start_index = start_indices(4)
+        indices = 4
+    end
 
     rx_bits = rx_bits(start_index:end);
 
     data_length_binary = rx_bits(1:20);
-    data_length = bi2de(data_length_binary', 'left-msb');
+    data_length = bi2de(data_length_binary', 'left-msb')
     unpacked_data = rx_bits(21:21+data_length-1);
 
     data2photo(decompress(unpacked_data')); % show me the chicken
