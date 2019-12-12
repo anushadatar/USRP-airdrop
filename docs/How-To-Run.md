@@ -22,4 +22,4 @@ cd C:\Program Files\UHD\lib\uhd\examples
 
 rx_samples_to_file ‐‐freq 2478e6 ‐‐rate 2e6 ‐‐type float ‐‐args "serial=30CF9A5" ‐‐ant "TX/RX" ‐‐subdev "A:A" --gain 40 --file rx.dat
 ```
-Then, run the script `receive_image.m` on the data file to recover the original image.
+Then, run the script `receive_data.m` on the data file to recover the original image.
