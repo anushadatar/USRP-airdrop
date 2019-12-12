@@ -1,3 +1,4 @@
+% Testing code to view received data and validate correction. 
 % rx_filename = 'rx_chicken.dat';
 % pulse_width = 500;
 % % % % % % %%
