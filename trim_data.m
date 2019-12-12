@@ -29,7 +29,7 @@ t = linspace(0,20000,20000);
 %load('known_sig_5000.mat');
 %known_sig = x(8386000:8386000+80000);
 %known_sig = cos(10*pi*(.015)*t);
-known_sig = 0.003.*ones(200.*pulse_size,1)';
+known_sig = ones(200.*pulse_size,1)';
 [xCorr,lags] = xcorr(x,known_sig);
 % %best known signal for data 
 % %figure(2)
@@ -40,7 +40,7 @@ known_sig = 0.003.*ones(200.*pulse_size,1)';
 [~,I] = max(abs(xCorr));
 maxt = lags(I) + 1500
 new_rx = rx(maxt:len_transmit+maxt-1);
-newer_rx_no_known = rx(maxt+(2000.*pulse_size):len_transmit+maxt-1);
+newer_rx_no_known = rx(maxt+(200.*pulse_size):len_transmit+maxt-1);
 % figure(1)
 % hold on
 %figure(2)
