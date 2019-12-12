@@ -1,13 +1,15 @@
-% rx_filename = 'rx_siddhartan2.dat';
+% rx_filename = 'rx_chicken.dat';
 % pulse_width = 500;
-% % % % % %%
+% % % % % % %%
 % [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
-% % %%
+% % % %%
 % corrected = costas_loop(rx);
-% [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width);
-% [spun_corrected, angle] = rotate_dat(corrected);
-% % 
-% plot(real(spun_corrected))
+% %%
+% plot(real(corrected))
+% % [trimmed_w_known, trimmed_no_known] = trim_data(corrected, pulse_width);
+% % [spun_corrected, angle] = rotate_dat(corrected);
+% % % 
+% % plot(real(spun_corrected))
 
 function receive_data(rx_filename, pulse_width)
     [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
