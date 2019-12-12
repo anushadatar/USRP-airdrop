@@ -9,9 +9,9 @@ function unpacked_data = unpack_data(rx_filename)
     fclose(rx_file);
     % Add real and complex values for each data point from the saved file.%
     cleared_data = raw_rx_data(1:2:end)+1i*raw_rx_data(2:2:end);
-    % TODO: All of the part that is actual work - 
-        % Decode none bits to find phase offset
-        % Magnitude/temporal error correction
+%    [trimmed_w_known, trimmed_no_known] = trim_data(rx_filename, 50); % this still doesn't call correctly from livescript
+
+
     % From here on, we assume that we have data that is made up of complex
     % numbers containing first the known data, then 
     unpacked_data = zeros(2*length(cleared_data), 1);
