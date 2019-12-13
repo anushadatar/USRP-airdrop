@@ -18,7 +18,7 @@ function receive_data(rx_filename, pulse_width)
     %         pulse_width = The width of the pulse convolved with the data.
     % Output: Displays the photo decoded from the data.
     
-    [rx, tx] = open_data(rx_filename, 'tx_500_conv.dat');
+    [rx] = open_data(rx_filename);
     % Use a costas loop to correct for frequency error.
     corrected = costas_loop(rx);
 
@@ -32,7 +32,7 @@ function receive_data(rx_filename, pulse_width)
     % constellation (found using rotate_dat).
     [spun_corrected, angle] = rotate_dat(trimmed_w_known);
     
-    % DEBUG: Checl for rotation.
+    % DEBUG: Check for rotation.
     %figure(3)
     %plot(real(spun_corrected));
 
@@ -43,9 +43,10 @@ function receive_data(rx_filename, pulse_width)
     % Decode symbols into individual bits.
     rx_bits = decode_data(sampled_rx);
     tx_bits = decode_data(sampled_tx);
-    % Convert bits
+    % Convert bits to 0 and 1 (binary data) instead of 1 and -1.
     rx_bits(rx_bits == -1) = 0;
 
+    % Find start indices in rx bits to determine data location 
     start_indices = find(~rx_bits);
     
     if start_indices(1) > 350
@@ -61,17 +62,23 @@ function receive_data(rx_filename, pulse_width)
         start_index = start_indices(4)
         indices = 4
     end
-
+    % Get data bits following start index.
     rx_bits = rx_bits(start_index:end);
-
+    % Find length of actual data based on value encoded in housekeeping 
+    % bits. Only account for and decompress the number of data points in
+    % the actual image, as the remaining points are filler.
     data_length_binary = rx_bits(1:20);
     data_length = bi2de(data_length_binary', 'left-msb')
     unpacked_data = rx_bits(21:21+data_length-1);
-
-    data2photo(decompress(unpacked_data')); % show me the chicken
+    % Decompress bits and display the image!
+    data2photo(decompress(unpacked_data')); 
 end
 
 function qpsk_signal = qpsk(data, fc)
+    % Generate a qpsk signal.
+    % Input:  data        = Data to encode in signal.
+    %         fc          = Center frequency of the signal.
+    % Output: qpsk_signal = The generated QPSK signal. 
     T = 1./fc; % period
     t = T./99:T./99:T; % time vector
 
@@ -86,21 +93,25 @@ function qpsk_signal = qpsk(data, fc)
     plot(qpsk_signal) % plot modulated signal to show phase shifts
 end
 
-function [rx, tx] = open_data(rx_filename, tx_filename)
-    % open received data
+function rx = open_data(rx_filename)
+    % Open received data file (and, if needed for debug, transmit file). 
+    % Input:  rx_filename = Filename of .dat file with received data.
+    % Output: rx          = Data vector from rx file.
+    
+    % Open received data file.
     f1 = fopen(rx_filename, 'r');
     tmp = fread(f1,'float32');
     fclose(f1);
     rx = tmp(1:2:end)+1i*tmp(2:2:end);
-
-    f2 = fopen(tx_filename, 'r');
-    tmp2 = fread(f2,'float32');
-    fclose(f2);
-    tx = tmp2(1:2:end)+1i*tmp2(2:2:end);
 end
 
 
 function decoded_data = decode_data(data)
+    % Decode the data vector based on a QPSK modulation scheme.
+    % Output should be two times as long as the input.
+    % Input:  data = Data vector containing complex QPSK symbols.
+    % Output: decoded_data = Data vector containing real bits. 
+    
     decoded_data = zeros(size(data,1).*2,1);
     
     for i = [1:1:size(data,1)]
@@ -110,6 +121,11 @@ function decoded_data = decode_data(data)
 end
 
 function corrected = costas_loop(data)
+    % Costas loop function that uses a PI controller to account for
+    % frequency-domain QPSK smearing
+    % Input:  data      = The data vector to correct.
+    % Output: corrected = The data vector corrected for frequency error.
+    
     beta = 3;
     alpha = 0.01;
     error_sum = 0;
@@ -142,6 +158,12 @@ function corrected = costas_loop(data)
 end
 
 function sampled_data = sample_data(data, pulse_size)
+    % Sample points from the data vector based on the size of the pulse.
+    % Removes redundancy associated with pulse size to show actual bits.
+    % Input:  data       = Data vector, corrected for frequency and phase.
+    %         pulse_size = Size of the pulse convolved with data bits.
+    % Ouput:  sampled_data = Data sampled at a single point for each pulse.
+    
     sampled_data = zeros(round(size(data)./pulse_size));
     offset = 150;
 
