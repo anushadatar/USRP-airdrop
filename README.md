@@ -5,4 +5,4 @@ In this final project we send images wirelessly between two USRP B210 software d
 
 This repository includes the code associated with this process, with [transmit_image](https://github.com/anushadatar/USRP-airdrop/blob/master/transmit_image.m) calling the necesssary functions to prepare a file to transmit and [receive_data](https://github.com/anushadatar/USRP-airdrop/blob/master/receive_data.m) to process a received file. 
 
-For more information, check out our [final report TODO UPLOAD TO GH AND ADD LINK]() and [presentation](https://docs.google.com/presentation/d/1z7SVGgXfu3hnzfCLlbkORCMY87OU6EDbpJtw_uwTl6o/edit?usp=sharing).
+For more information, check out our [final report](https://github.com/anushadatar/USRP-airdrop/blob/master/docs/FinalReport.pdf) and [presentation](https://docs.google.com/presentation/d/1z7SVGgXfu3hnzfCLlbkORCMY87OU6EDbpJtw_uwTl6o/edit?usp=sharing).
